@@ -1,6 +1,6 @@
 const request = require('request')
 
-let geocodeAddress = (terminalAddress) => {
+let geocodeAddress = (terminalAddress, callback) => {
 
   let address = encodeURIComponent(terminalAddress)//encoded for url request
 
@@ -9,13 +9,15 @@ let geocodeAddress = (terminalAddress) => {
     json: true
   }, (error, response, body) => {
     if (error) {
-      console.log('unable to connect');
+      callback('unable to connect')
     } else if (body.status === 'ZERO_RESULTS') {
-      console.log('no results for this address');
+      callback('no results for this address')
     } else if (body.status === 'OK') {
-      console.log(JSON.stringify(body.results[0].formatted_address, undefined, 2));
-      console.log('latitude:',JSON.stringify(body.results[0].geometry.location.lat, undefined, 2));
-      console.log('longitude:',JSON.stringify(body.results[0].geometry.location.lng, undefined, 2));
+      callback(undefined, {
+        address: body.results[0].formatted_address,
+        lattitude: body.results[0].geometry.location.lat,
+        longitude: body.results[0].geometry.location.lng
+      })
     }
   })
 }
